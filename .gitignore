@@ -1,0 +1,33 @@
+# General Build Process
+*.class
+*.log
+**/logs/
+**/build/
+**/target/
+**/public/lib
+out/
+
+# Mac OSx specific
+.DS_Store
+
+# IDEs
+**/.classpath
+**/.project
+**/.settings
+**/.idea/
+**/.idea_modules
+**/.cache-main
+**/.cache-tests
+/bin/
+**/*.sc
+*.iml
+.idea/
+*.iws
+**/core-site.xml
+.bsp/
+
+# Vim files
+*.sw[o,p]
+
+.env
+jars/
