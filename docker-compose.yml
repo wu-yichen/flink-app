@@ -2,10 +2,8 @@
 version: '3.8'
 services:
   client:
-    build:
-      context: .
-#      dockerfile: local.Dockerfile
-    command: "flink run -m jobmanager:8081 /opt/my-flink-app.jar --bootstrap-servers broker:29092 --topic flink-input"
+    build: .
+    command: "flink run -m jobmanager:8081 /opt/my-flink-app.jar"
     depends_on:
       - jobmanager
       - broker
@@ -13,7 +11,7 @@ services:
       - JOB_MANAGER_RPC_ADDRESS=jobmanager
       - BOOTSTRAP_SERVERS=broker:29092
       - KAFKA_TOPIC=flink-input
-      - CASSANDRA_HOST=localhost
+      - CASSANDRA_HOST=cassandra
       - CASSANDRA_PORT=9042
       - CASSANDRA_KEYSPACES=cassandrasink
       - CASSANDRA_TABLES=messages

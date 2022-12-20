@@ -16,6 +16,7 @@ object Main extends App {
 
   val kafkaConfig = KafkaConfig.apply(ConfigFactory.load().getConfig("app.kafka"))
 
+  print(s"===============kafka server: ${kafkaConfig.bootstrapServers}")
   val source = KafkaSource.builder()
     .setBootstrapServers(kafkaConfig.bootstrapServers)
     .setTopics(kafkaConfig.kafkaTopics)
