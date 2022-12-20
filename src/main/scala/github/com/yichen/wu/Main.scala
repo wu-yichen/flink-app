@@ -1,5 +1,6 @@
 package github.com.yichen.wu
 
+import com.typesafe.config.{ Config, ConfigFactory }
 import org.apache.flink.api.common.eventtime.WatermarkStrategy
 import org.apache.flink.api.common.serialization.SimpleStringSchema
 import org.apache.flink.api.scala.createTypeInformation
@@ -13,9 +14,11 @@ object Main extends App {
 
   val env = StreamExecutionEnvironment.getExecutionEnvironment
 
+  val kafkaConfig = KafkaConfig.apply(ConfigFactory.load().getConfig("app.kafka"))
+
   val source = KafkaSource.builder()
-    .setBootstrapServers("localhost:9092")
-    .setTopics("flink-input")
+    .setBootstrapServers(kafkaConfig.bootstrapServers)
+    .setTopics(kafkaConfig.kafkaTopics)
     .setStartingOffsets(OffsetsInitializer.earliest())
     .setValueOnlyDeserializer(new SimpleStringSchema())
     .build()
@@ -25,11 +28,38 @@ object Main extends App {
       out.collect(Tuple1[String](s"$value you are amazing"))
     }
 
+  val cassandraConfig = CassandraConfig.apply(ConfigFactory.load().getConfig("app.cassandra"))
+
   CassandraSink.addSink(tuples)
-    .setHost("localhost", 9042)
-    .setQuery("INSERT INTO cassandrasink.messages (payload) values (?);")
+    .setHost(cassandraConfig.cassandraHost, cassandraConfig.cassandraPort.toInt)
+    .setQuery(
+      s"INSERT INTO ${cassandraConfig.cassandraKeyspaces}.${cassandraConfig.cassandraTables} (payload) values (?);"
+    )
     .build()
     .name("flinkTestSink")
 
   env.execute("flink test")
+
+}
+
+final case class KafkaConfig(bootstrapServers: String, kafkaTopics: String)
+object KafkaConfig {
+  def apply(config: Config): KafkaConfig =
+    KafkaConfig(config.getString("bootstrap-servers"), config.getString("kafka-topics"))
+}
+
+final case class CassandraConfig(
+    cassandraHost: String,
+    cassandraPort: String,
+    cassandraKeyspaces: String,
+    cassandraTables: String
+)
+object CassandraConfig {
+  def apply(config: Config): CassandraConfig =
+    CassandraConfig(
+      config.getString("cassandra-host"),
+      config.getString("cassandra-port"),
+      config.getString("cassandra-keyspaces"),
+      config.getString("cassnadra-tables")
+    )
 }
