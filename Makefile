@@ -9,12 +9,10 @@ build-jar: clean
 	@sbt assembly
 
 full-run: ## Run the application with a new-built fat jar file
-full-run: build-jar
-	./run.sh
-
+full-run: build-jar run
 
 run: ## Run the application without building a fat jar when no source code change
-	./run.sh
+	docker-compose down && docker-compose build --no-cache && docker-compose up
 
 help:
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
