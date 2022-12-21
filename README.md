@@ -9,6 +9,8 @@ The Kafka, Cassandra and Flink clusters are created and fully run in docker.
 
 * [Dependencies](#dependencies)
 * [Building](#building)
+* [Interacting with Kafka](#interacting with Kafka)
+* [Interacting with Cassandra](#interacting with Cassandra)
 * [Accessing Flink's Web UI](#accessing-flinks-web-ui)
 
 ---
@@ -28,9 +30,13 @@ To install dependencies locally, compile and build a jar with dependencies you c
 
 `make build-jar`
 
-To run the application locally run:
+To build a fat jar and run the application locally, run:
 
 `make full-run`
+
+To run the application without building jar, run:
+
+`make run`
 
 ---
 ## Interacting with Kafka
